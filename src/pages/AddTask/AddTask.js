@@ -1,61 +1,107 @@
-import { useRef, useState } from 'react';
-import './AddTask.css';
+import { useRef, useState } from "react";
+import api from "../../services/api";
+import { getToken } from "../../services/auth";
+import "./AddTask.css";
 
 const AddTask = ({ onSubmit, tasksProp }) => {
+  const [title, setTitle] = useState("");
+  const [desciption, setDescription] = useState("");
 
-  const [task, setTask] = useState("");
-
-  const inputEl = useRef(null)
+  const inputTitleRef = useRef(null);
+  const inputDescriptionRef = useRef(null);
 
   const handleInputTask = () => {
-    inputEl.current.value = "";
-  }
+    inputTitleRef.current.value = "";
+    inputDescriptionRef.current.value = "";
+  };
+
+  const handleGetTasks = () => {
+    const token = getToken();
+    api
+      .get("/tasks  ", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((tasks) => {
+        console.log(tasks.data);
+        onSubmit(tasks.data);
+      })
+      .catch((error) => {});
+  };
 
   const handleInputSubmit = (event) => {
     event.preventDefault();
-    let newListTask = tasksProp.slice()
-    let idGenerator = 0
-
-    newListTask.length > 0 ? idGenerator = newListTask[newListTask.length - 1].id + 1 : idGenerator++
-
-    newListTask.push({
-      id: idGenerator,
-      task: task,
-      isComplete: false
-    })
-    setTask("")
-
-    onSubmit(newListTask);
-  }
+    const token = getToken();
+    console.log(desciption)
+    api
+      .post("/create-task  ", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        user_id: 1,
+        title: title,
+        description: desciption,
+        isComplete: false,
+      })
+      .then((response) => {
+        handleGetTasks();
+      })
+      .catch((error) => {});
+    setTitle("");
+  };
 
   return (
     <div className="form-task">
       <form>
-        <label className="label-title-task" htmlFor="task">Tarefa:</label>
-        <input
-          className="inpt-title-task"
-          type="text"
-          name="task"
-          ref={inputEl}
-          onChange={(event) => { setTask(event.target.value) }} />
+        <div>
+          <label className="label-task" htmlFor="task">
+            Tarefa:
+          </label>
+          <input
+            className="inpt-task"
+            type="text"
+            name="task"
+            ref={inputTitleRef}
+            onChange={(event) => {
+              setTitle(event.target.value);
+            }}
+          />
+        </div>
+        <div>
+          <label className="label-task" htmlFor="description">
+            Descrição:
+          </label>
+          <input
+            className="inpt-task"
+            type="text"
+            name="description"
+            ref={inputDescriptionRef}
+            onChange={(event) => {
+              setDescription(event.target.value);
+            }}
+          />
+        </div>
+
         <button
           className="btn-add-task"
           type="submit"
-          disabled={taskValidator(task)}
-          onClick={
-            (event) => {
-              handleInputSubmit(event)
-              handleInputTask()
-              taskValidator(task)
-            }
-          }>Cadastrar</button>
+          disabled={taskValidator(title)}
+          onClick={(event) => {
+            handleInputSubmit(event);
+            handleInputTask();
+            taskValidator(title);
+          }}
+        >
+          Cadastrar
+        </button>
       </form>
-    </div >
-  )
-}
+    </div>
+  );
+};
 
 function taskValidator(task) {
-  return task.length > 3 ? '' : 'Uma tarefa deve ser inserida.';
+  return task.length > 3 ? "" : "Uma tarefa deve ser inserida.";
 }
 
 export default AddTask;

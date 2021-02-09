@@ -1,10 +1,10 @@
 .form-task {
   display: block;
   margin: 10px;
-  max-width: 500px;
+  max-width: 600px;
 }
 
-.label-title-task {
+.label-task {
   color: var(--gray-dark);
 }
 
@@ -13,10 +13,12 @@
   padding: 2px;
 }
 
-.inpt-title-task {
+.inpt-task {
+  margin-top: 5px;
+  margin-bottom: 5px;
   border: 1px solid var(--secondary);
   height: 1.60rem;
-  width: 60%;
+  width: 100%;
   border-radius: 0.25rem;
 }
 
@@ -30,13 +32,14 @@
   }
 }
 
-.inpt-title-task:focus {
+.inpt-task:focus {
     border-color: var(--blue-light);
     outline: 0;
     box-shadow: 0 0 0 0.2rem var(--blue-focus);
 }
 
 .btn-add-task {
+  margin-left: auto;
   width: 8.4rem;
   height: 1.60rem;
   padding: 2px;
